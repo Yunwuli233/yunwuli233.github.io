@@ -11,7 +11,7 @@
     
     <title>
         
-            给自己的博客添加一个看板娘 |
+            爬虫爬取百度贴吧帖子标题 |
         
         Ayun&#39;s Blog
     </title>
@@ -136,7 +136,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">给自己的博客添加一个看板娘</span>
+            <span class="title-hover-animation">爬虫爬取百度贴吧帖子标题</span>
         </div>
 
         
@@ -155,8 +155,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-04-06 12:38:39</span>
-        <span class="mobile">2022-04-06 12:38</span>
+        <span class="pc">2022-05-10 21:33:20</span>
+        <span class="mobile">2022-05-10 21:33</span>
     </span>
     
     
@@ -177,8 +177,26 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="配置本身很简单，参考的这个帖子"><a href="#配置本身很简单，参考的这个帖子" class="headerlink" title="配置本身很简单，参考的这个帖子"></a>配置本身很简单，参考的这个帖子</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.xiaoweigod.com/share/2068.html" >https://www.xiaoweigod.com/share/2068.html<i class="fas fa-external-link-alt"></i></a></p>
-<p><br>&emsp;比较麻烦的一点: 因为我的博客是用hexo框架自动生成的，所以从github拉来的配置文件不知道放在哪里才能生效。<br><br>&emsp;如果使用hexo框架生成博客的话，可以参考我的配置过程<br><br>&emsp;1.首先把从github拉来的配置文件放在网站根目录下，应该是在<br><br>&emsp;/blog/public/<br><br>这个目录下(可能会根据使用的hexo主题不同而不同，可以通过点击一些网站的链接，然后看地址栏的变化找到)<br><br>&emsp;2.想办法把<br><br>&emsp;<br><code>&lt;script src=&quot;/live2d-widgit/autoload.js&quot;&gt;&lt;/script&gt;</code><br><br>这条语句放在网站首页中，我是放在了<br><br>/blog/themes/keep(我正在用的主题)/layout/_partial/head.ejs<br><br>这个文件中，路径会稍有不同，总之只要让这条语句执行起来就可以了</p>
+            <h3 id="1-爬取数据"><a href="#1-爬取数据" class="headerlink" title="1.爬取数据"></a>1.爬取数据</h3><p>通过python程序模拟浏览器发送网络请求，接受请求响应，自动抓取互联网的大量数据。</p>
+<ul>
+<li>爬取数据通过urllib库实现</li>
+<li>解析数据通过bs4的BeautifulSoup模块实现</li>
+</ul>
+<h4 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h4><p>因为贴吧的网页源代码含有大量注释，所以解析之前必须先把关键部分的注释手动替换掉</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">strre = str(response.read().decode(&#x27;utf-8&#x27;))  # 手动去掉文件的注释</span><br><span class="line">strre = strre.replace(&quot;&lt;--&quot;, &quot; &quot;)</span><br><span class="line">strre = strre.replace(&quot;&lt;!--&quot;, &quot; &quot;)</span><br><span class="line">strre = strre.replace(&quot;--&gt;&quot;, &quot; &quot;)</span><br></pre></td></tr></table></figure>
+<p>提取帖子标题和作者的正则表达式模式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">findTitle = re.compile(r&#x27;title=&quot;(.*?)&quot;&#x27;)  # 获取帖子标题</span><br><span class="line"></span><br><span class="line">findAuthor = re.compile(r&#x27;&lt;span class=&quot;inq&quot;&gt;(.*)&lt;/span&gt;&#x27;) # 获取帖子作者</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成词云"><a href="#2-生成词云" class="headerlink" title="2.生成词云"></a>2.生成词云</h3><ul>
+<li>jieba库对提取的帖子标题进行分词</li>
+<li>WordCloud库和matplotlib库绘词云</li>
+</ul>
+<h4 id="tips-1"><a href="#tips-1" class="headerlink" title="tips"></a>tips</h4><p>因为帖子分词后的数据含有大量语气词，所以在生成词云前可以通过遍历把一些没必要出现的词删掉</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stopwords = &#123;&#x27;有&#x27;, &#x27;了&#x27;, &#x27;的&#x27;, &#x27;吗&#x27;, &#x27;有没有&#x27;, &#x27;我&#x27;, &#x27;啊&#x27;, &#x27;吧&#x27;, &#x27;是&#x27;, &#x27;可以&#x27;</span><br><span class="line">             &#x27;呀&#x27;, &#x27;啦&#x27;, &#x27;什么&#x27;, &#x27;学校&#x27;, &#x27;这&#x27;&#125;</span><br><span class="line">for item in cut:</span><br><span class="line">    for stopword in stopwords:</span><br><span class="line">        if item == stopword:</span><br><span class="line">            cut.remove(item)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-结果展示"><a href="#3-结果展示" class="headerlink" title="3.结果展示"></a>3.结果展示</h3><p>1.原神吧</p>
+<p><img src="https://xingqiu-tuchuang-1256524210.cos.ap-shanghai.myqcloud.com//728tieba.jpg" alt="tieba"></p>
+<p>2.某漫画吧<br><img src="C:\Users\lalaShu\Desktop\tieba2.jpg" alt="tieba2"></p>
 
         </div>
 
@@ -189,29 +207,14 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2022/05/10/20220510-pc/"
-                        >
-                            <span class="left arrow-icon flex-center">
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
-                            <span class="title flex-center">
-                                <span class="post-nav-title-item">爬虫爬取百度贴吧帖子标题</span>
-                                <span class="post-nav-item">Prev posts</span>
-                            </span>
-                        </a>
-                    </div>
-                
                 
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/02/13/20220213/"
+                           href="/2022/04/06/20220406/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">记深夜被vscode破防</span>
+                                <span class="post-nav-title-item">给自己的博客添加一个看板娘</span>
                                 <span class="post-nav-item">Next posts</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -337,7 +340,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%AC%E8%BA%AB%E5%BE%88%E7%AE%80%E5%8D%95%EF%BC%8C%E5%8F%82%E8%80%83%E7%9A%84%E8%BF%99%E4%B8%AA%E5%B8%96%E5%AD%90"><span class="nav-text">配置本身很简单，参考的这个帖子</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%88%AC%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-text">1.爬取数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tips"><span class="nav-text">tips</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%9F%E6%88%90%E8%AF%8D%E4%BA%91"><span class="nav-text">2.生成词云</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tips-1"><span class="nav-text">tips</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="nav-text">3.结果展示</span></a></li></ol>
     </div>
 </div>
         </aside>
