@@ -158,14 +158,14 @@ function loadWidget(config) {
 	}
 
 	(function initModel() {
-		let modelId = localStorage.getItem("modelId"),
-			modelTexturesId = localStorage.getItem("modelTexturesId");
-		if (modelId === null) {
-			// 首次访问加载 指定模型 的 指定材质
-			let modelId = 3; // 模型 ID
-			modelTexturesId = 0; // 材质 ID
-		}
-		let	model0Id = 3; // 模型 ID
+		// let modelId = localStorage.getItem("modelId"),
+		// 	modelTexturesId = localStorage.getItem("modelTexturesId");
+		// if (modelId === null) {
+		// 	// 首次访问加载 指定模型 的 指定材质
+		// 	let modelId = 3; // 模型 ID
+		// 	modelTexturesId = 0; // 材质 ID
+		// }
+		let	modelId = 3; // 模型 ID
 		modelTexturesId = 0; // 材质 ID
 		//通过控制台输出当前看板娘的模型ID和材质ID
 		console.log("模型ID:"+modelId,"材质ID:"+modelTexturesId);
